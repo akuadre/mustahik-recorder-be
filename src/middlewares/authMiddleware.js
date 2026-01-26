@@ -43,17 +43,6 @@ export const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // logout when password is changed
-    if (
-      user.passwordChangedAt &&
-      decoded.iat * 1000 < user.passwordChangedAt.getTime()
-    ) {
-      return res.status(401).json({
-        message: "Password changed. Please login again.",
-        code: "PASSWORD_CHANGED",
-      });
-    }
-
     req.user = user;
     next();
   } catch (err) {

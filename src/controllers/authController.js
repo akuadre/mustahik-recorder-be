@@ -56,4 +56,61 @@ const login = async (req, res) => {
   return successResponse(res, "Login success", data, 200);
 };
 
-export { register, login };
+const logout = async (req, res) => {
+  // Ambil token dari cookie atau header
+  let token =
+    req.cookies?.jwt ||
+    (req.headers.authorization?.startsWith("Bearer")
+      ? req.headers.authorization.split(" ")[1]
+      : null);
+
+  // Validasi: jika token tidak ada
+  if (!token) {
+    return res.status(400).json({
+      status: "fail",
+      message: "No token provided, cannot logout",
+    });
+  }
+
+  try {
+    // Masukkan token ke tabel blocked
+    await prisma.blockedToken.create({
+      data: {
+        token,
+        userId: req.user.id,
+      },
+    });
+
+    // Hapus cookie
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
+    return successResponse(res, "Logged out succesfully", 200);
+  } catch (err) {
+    return res.status(500).json({
+      status: "error",
+      message: "Something went wrong while logging out",
+      error: err.message,
+    });
+  }
+};
+
+const getProfile = async (req, res) => {
+  const user = req.user;
+
+  return successResponse(
+    res,
+    "User profile fetched successfully",
+    {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+    },
+    200,
+  );
+};
+
+export { getProfile, register, login, logout };
