@@ -24,6 +24,7 @@ model User {
   updatedAt  DateTime @updatedAt
 
   blockedTokens BlockedToken[]
+  santunan  Santunan[]
 }
 
 model BlockedToken {
@@ -33,4 +34,48 @@ model BlockedToken {
   createdAt DateTime @default(now())
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Mustahik {
+  id             String   @id @default(uuid())
+  nama           String
+  tempatLahir    String
+  tanggalLahir   DateTime
+  profesi        String
+  asnaf          String
+
+  negara         String   @default("Indonesia")
+  provinsi       String
+  kecamatan      String
+  kelurahan      String
+  rt             String?
+  rw             String?
+  alamat         String
+
+  fotoMustahik   String?  // nama file / url
+  ttdMustahik    String?  // nama file / url - tanda tangan penerima
+  dokumenLain    String?  // KTP / KK / lainnya
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  santunan       Santunan[]
+}
+
+model Santunan {
+  id              String   @id @default(uuid())
+  nominal         Int
+  program         String   // santunan yatim, ibu berdaya, dll
+  jenisSantunan   String   // zakat, sedekah, infaq, dll
+
+  ttdPenerima     String?  // url / filename
+  dokumentasi     String?  // foto penyerahan
+
+  userId          String
+  mustahikId      String
+
+  user            User     @relation(fields: [userId], references: [id])
+  mustahik        Mustahik @relation(fields: [mustahikId], references: [id])
+
+  createdAt       DateTime @default(now())
 }
