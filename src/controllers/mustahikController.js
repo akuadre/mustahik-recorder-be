@@ -16,12 +16,9 @@ const createMustahik = async (req, res) => {
       rt,
       rw,
       alamat,
-      fotoMustahik,
-      ttdMustahik,
-      dokumenLain,
     } = req.body;
 
-    // VALIDASI LENGKAP
+    // VALIDASI
     if (
       !nama ||
       !tempatLahir ||
@@ -35,6 +32,11 @@ const createMustahik = async (req, res) => {
     ) {
       return errorResponse(res, "Data mustahik tidak lengkap", 400);
     }
+
+    // ambil file dari multer
+    const fotoMustahik = req.files?.fotoMustahik?.[0]?.filename || null;
+    const ttdMustahik = req.files?.ttdMustahik?.[0]?.filename || null;
+    const dokumenLain = req.files?.dokumenLain?.[0]?.filename || null;
 
     const mustahik = await prisma.mustahik.create({
       data: {
@@ -56,7 +58,12 @@ const createMustahik = async (req, res) => {
       },
     });
 
-    return successResponse(res, "Mustahik berhasil ditambahkan", mustahik, 201);
+    return successResponse(
+      res,
+      "Mustahik berhasil ditambahkan",
+      { mustahik },
+      201,
+    );
   } catch (error) {
     return errorResponse(res, error.message, 500);
   }
@@ -64,14 +71,21 @@ const createMustahik = async (req, res) => {
 
 const getAllMustahik = async (req, res) => {
   try {
+    const { search } = req.query;
+
     const mustahik = await prisma.mustahik.findMany({
+      where: search
+        ? {
+            OR: [{ nama: { contains: search, mode: "insensitive" } }],
+          }
+        : undefined,
       orderBy: { createdAt: "desc" },
     });
 
     return successResponse(
       res,
       "Data mustahik berhasil diambil",
-      mustahik,
+      { mustahik },
       200,
     );
   } catch (error) {
@@ -94,7 +108,7 @@ const getMustahikById = async (req, res) => {
     return successResponse(
       res,
       "Detail mustahik berhasil diambil",
-      mustahik,
+      { mustahik },
       200,
     );
   } catch (error) {
@@ -127,7 +141,7 @@ const updateMustahik = async (req, res) => {
     return successResponse(
       res,
       "Data mustahik berhasil diperbarui",
-      mustahik,
+      { mustahik },
       200,
     );
   } catch (error) {

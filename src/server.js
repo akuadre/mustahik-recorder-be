@@ -18,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authRoutes);
 app.use("/api/mustahik", mustahikRoutes);
 
+// Access File Upload
+app.use("/uploads", express.static("uploads"));
+
 app.get("/", (req, res) => {
   res.json({ message: "API running on PORT: " + process.env.PORT });
 });
