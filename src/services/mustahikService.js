@@ -10,7 +10,7 @@ const withAge = (mustahik) => ({
 });
 
 const createMustahikService = async (payload) => {
-  const mustahik = prisma.mustahik.create({
+  const mustahik = await prisma.mustahik.create({
     data: payload,
   });
 
@@ -18,7 +18,7 @@ const createMustahikService = async (payload) => {
 };
 
 const getAllMustahikService = async (search) => {
-  const data = prisma.mustahik.findMany({
+  const data = await prisma.mustahik.findMany({
     where: search
       ? {
           OR: [
@@ -35,7 +35,7 @@ const getAllMustahikService = async (search) => {
 };
 
 const getMustahikByIdService = async (id) => {
-  const mustahik = prisma.mustahik.findUnique({
+  const mustahik = await prisma.mustahik.findUnique({
     where: { id },
   });
 
@@ -43,7 +43,7 @@ const getMustahikByIdService = async (id) => {
 };
 
 const updateMustahikService = async (id, payload) => {
-  const mustahik = prisma.mustahik.update({
+  const mustahik = await prisma.mustahik.update({
     where: { id },
     data: payload,
   });
@@ -52,9 +52,11 @@ const updateMustahikService = async (id, payload) => {
 };
 
 const deleteMustahikService = async (id) => {
-  return prisma.mustahik.delete({
+  await prisma.mustahik.delete({
     where: { id },
   });
+
+  return true;
 };
 
 export {
