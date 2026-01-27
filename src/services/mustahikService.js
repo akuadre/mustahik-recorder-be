@@ -35,6 +35,15 @@ const getAllMustahikService = async (search) => {
         }
       : undefined,
     orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      nama: true,
+      tanggalLahir: true,
+      kota: true,
+      kecamatan: true,
+      asnaf: true,
+      fotoMustahik: true,
+    },
   });
 
   return data.map(withAge);
