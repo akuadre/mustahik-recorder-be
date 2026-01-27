@@ -18,6 +18,19 @@ const withAge = (mustahik) => {
 const createMustahikService = async (payload) => {
   const mustahik = await prisma.mustahik.create({
     data: payload,
+    select: {
+      id: true,
+      nama: true,
+      tanggalLahir: true,
+      profesi: true,
+      asnaf: true,
+      kota: true,
+      kecamatan: true,
+      kelurahan: true,
+      fotoMustahik: true,
+      ttdMustahik: true,
+      dokumenLain: true,
+    },
   });
 
   return withAge(mustahik);
@@ -52,6 +65,17 @@ const getAllMustahikService = async (search) => {
 const getMustahikByIdService = async (id) => {
   const mustahik = await prisma.mustahik.findUnique({
     where: { id },
+    select: {
+      id: true,
+      nama: true,
+      tanggalLahir: true,
+      profesi: true,
+      asnaf: true,
+      kota: true,
+      kecamatan: true,
+      kelurahan: true,
+      fotoMustahik: true,
+    },
   });
 
   return mustahik ? withAge(mustahik) : null;
