@@ -46,6 +46,7 @@ model Mustahik {
 
   negara         String   @default("Indonesia")
   provinsi       String
+  kota           String?   // kota / kabupaten
   kecamatan      String
   kelurahan      String
   rt             String?

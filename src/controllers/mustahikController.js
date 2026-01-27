@@ -18,6 +18,7 @@ const createMustahik = async (req, res) => {
       asnaf,
       negara,
       provinsi,
+      kota,
       kecamatan,
       kelurahan,
       rt,
@@ -33,6 +34,7 @@ const createMustahik = async (req, res) => {
       !profesi ||
       !asnaf ||
       !provinsi ||
+      !kota ||
       !kecamatan ||
       !kelurahan ||
       !alamat
@@ -53,6 +55,7 @@ const createMustahik = async (req, res) => {
       asnaf,
       negara: negara || "Indonesia",
       provinsi,
+      kota,
       kecamatan,
       kelurahan,
       rt,
