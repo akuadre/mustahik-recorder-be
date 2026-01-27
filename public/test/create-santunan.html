@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Test Create Santunan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 300px;
+      padding: 5px;
+      margin-top: 3px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 8px 15px;
+      font-size: 16px;
+    }
+
+    #responseOutput {
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+      max-width: 800px;
+      background-color: #f9f9f9;
+    }
+
+    img {
+      max-width: 200px;
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Test Create Santunan</h2>
+
+  <label for="token">Token (Bearer):</label>
+  <input type="text" id="token"
+    value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyM2NlZTJkLWFkOGQtNDU3MS05Y2E0LTJlZDIzNTVjZjkzMCIsImlhdCI6MTc2OTQxMjYxMCwiZXhwIjoxNzcwMDE3NDEwfQ.9ENBqmooDicaaRtigmLs7nHZ_y8hHuUqXbOhM51ajhU" />
+
+  <form id="santunanForm" enctype="multipart/form-data">
+
+    <label for="nominal">Nominal:</label>
+    <input type="number" name="nominal" value="100000">
+
+    <label for="program">Program:</label>
+    <input type="text" name="program" value="Santunan Pendidikan">
+
+    <label for="jenisSantunan">Jenis Santunan:</label>
+    <select name="jenisSantunan">
+      <option value="zakat">Zakat</option>
+      <option value="infaq">Infaq</option>
+      <option value="sedekah">Sedekah</option>
+    </select>
+
+    <label for="userId">User ID:</label>
+    <input type="text" name="userId" value="USER_ID_DI_SINI">
+
+    <label for="mustahikId">Mustahik ID:</label>
+    <input type="text" name="mustahikId" value="MUSTAHIK_ID_DI_SINI">
+
+    <label for="ttdPenerima">TTD Penerima:</label>
+    <input type="file" name="ttdPenerima" accept="image/*">
+
+    <label for="dokumentasi">Dokumentasi:</label>
+    <input type="file" name="dokumentasi" accept="image/*">
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h3>Response:</h3>
+  <div id="responseOutput">Menunggu response...</div>
+
+  <script>
+    const form = document.getElementById("santunanForm");
+    const output = document.getElementById("responseOutput");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const token = document.getElementById("token").value;
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("http://localhost:3000/api/santunan", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        console.log(data);
+
+        output.textContent = JSON.stringify(data, null, 2);
+
+        if (data.success && data.data?.santunan) {
+          const santunan = data.data.santunan;
+
+          if (santunan.ttdPenerima) {
+            const img = document.createElement("img");
+            img.src = `http://localhost:3000/uploads/santunan/${santunan.ttdPenerima}`;
+            output.appendChild(img);
+          }
+
+          if (santunan.dokumentasi) {
+            const img = document.createElement("img");
+            img.src = `http://localhost:3000/uploads/santunan/${santunan.dokumentasi}`;
+            output.appendChild(img);
+          }
+        }
+
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+
+</html>

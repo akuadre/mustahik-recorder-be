@@ -5,6 +5,7 @@ import "dotenv/config";
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
 import mustahikRoutes from "./routes/mustahikRoutes.js";
+import santunanRoutes from "./routes/santunanRoutes.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // API Routes
 app.use("/auth", authRoutes);
 app.use("/api/mustahik", mustahikRoutes);
+app.use("/api/santunan", santunanRoutes);
 
 // Access Public Folder
 app.use(express.static("public"));
