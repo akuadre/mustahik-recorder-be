@@ -1,4 +1,11 @@
-import { prisma } from "../config/db.js";
+import {
+  createMustahikService,
+  getAllMustahikService,
+  getMustahikByIdService,
+  updateMustahikService,
+  deleteMustahikService,
+} from "../services/mustahikService.js";
+
 import { successResponse, errorResponse } from "../utils/response.js";
 
 const createMustahik = async (req, res) => {
@@ -38,25 +45,25 @@ const createMustahik = async (req, res) => {
     const ttdMustahik = req.files?.ttdMustahik?.[0]?.filename || null;
     const dokumenLain = req.files?.dokumenLain?.[0]?.filename || null;
 
-    const mustahik = await prisma.mustahik.create({
-      data: {
-        nama,
-        tempatLahir,
-        tanggalLahir: new Date(tanggalLahir),
-        profesi,
-        asnaf,
-        negara: negara || "Indonesia",
-        provinsi,
-        kecamatan,
-        kelurahan,
-        rt,
-        rw,
-        alamat,
-        fotoMustahik,
-        ttdMustahik,
-        dokumenLain,
-      },
-    });
+    const payload = {
+      nama,
+      tempatLahir,
+      tanggalLahir: new Date(tanggalLahir),
+      profesi,
+      asnaf,
+      negara: negara || "Indonesia",
+      provinsi,
+      kecamatan,
+      kelurahan,
+      rt,
+      rw,
+      alamat,
+      fotoMustahik,
+      ttdMustahik,
+      dokumenLain,
+    };
+
+    const mustahik = await createMustahikService(payload);
 
     return successResponse(
       res,
@@ -73,14 +80,7 @@ const getAllMustahik = async (req, res) => {
   try {
     const { search } = req.query;
 
-    const mustahik = await prisma.mustahik.findMany({
-      where: search
-        ? {
-            OR: [{ nama: { contains: search, mode: "insensitive" } }],
-          }
-        : undefined,
-      orderBy: { createdAt: "desc" },
-    });
+    const mustahik = await getAllMustahikService(search);
 
     return successResponse(
       res,
@@ -97,9 +97,7 @@ const getMustahikById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const mustahik = await prisma.mustahik.findUnique({
-      where: { id },
-    });
+    const mustahik = await getMustahikByIdService(id);
 
     if (!mustahik) {
       return errorResponse(res, "Mustahik tidak ditemukan", 404);
@@ -120,23 +118,19 @@ const updateMustahik = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const mustahikExists = await prisma.mustahik.findUnique({
-      where: { id },
-    });
-
-    if (!mustahikExists) {
+    const existing = await getMustahikByIdService(id);
+    if (!existing) {
       return errorResponse(res, "Mustahik tidak ditemukan", 404);
     }
 
-    const mustahik = await prisma.mustahik.update({
-      where: { id },
-      data: {
-        ...req.body,
-        tanggalLahir: req.body.tanggalLahir
-          ? new Date(req.body.tanggalLahir)
-          : undefined,
-      },
-    });
+    const payload = {
+      ...req.body,
+      tanggalLahir: req.body.tanggalLahir
+        ? new Date(req.body.tanggalLahir)
+        : undefined,
+    };
+
+    const mustahik = await updateMustahikService(id, payload);
 
     return successResponse(
       res,
@@ -153,17 +147,12 @@ const deleteMustahik = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const mustahikExists = await prisma.mustahik.findUnique({
-      where: { id },
-    });
-
-    if (!mustahikExists) {
+    const existing = await getMustahikByIdService(id);
+    if (!existing) {
       return errorResponse(res, "Mustahik tidak ditemukan", 404);
     }
 
-    await prisma.mustahik.delete({
-      where: { id },
-    });
+    await deleteMustahikService(id);
 
     return successResponse(res, "Mustahik berhasil dihapus", null, 200);
   } catch (error) {
