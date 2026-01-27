@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Test Create Mustahik</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 300px;
+      padding: 5px;
+      margin-top: 3px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 8px 15px;
+      font-size: 16px;
+    }
+
+    #responseOutput {
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+      max-width: 800px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Test Create Mustahik</h2>
+
+  <label for="token">Token (Bearer):</label>
+  <input type="text" id="token"
+    value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyM2NlZTJkLWFkOGQtNDU3MS05Y2E0LTJlZDIzNTVjZjkzMCIsImlhdCI6MTc2OTQxMjYxMCwiZXhwIjoxNzcwMDE3NDEwfQ.9ENBqmooDicaaRtigmLs7nHZ_y8hHuUqXbOhM51ajhU" />
+
+  <form id="mustahikForm" enctype="multipart/form-data">
+    <label for="nama">Nama:</label>
+    <input type="text" name="nama" id="nama" value="Ahmad">
+
+    <label for="tempatLahir">Tempat Lahir:</label>
+    <input type="text" name="tempatLahir" value="Jakarta">
+
+    <label for="tanggalLahir">Tanggal Lahir:</label>
+    <input type="date" name="tanggalLahir" value="1985-05-20">
+
+    <label for="profesi">Profesi:</label>
+    <input type="text" name="profesi" value="Guru">
+
+    <label for="asnaf">Asnaf:</label>
+    <input type="text" name="asnaf" value="Miskin">
+
+    <label for="negara">Negara:</label>
+    <input type="text" name="negara" value="Indonesia">
+
+    <label for="provinsi">Provinsi:</label>
+    <input type="text" name="provinsi" value="Jawa Barat">
+
+    <label for="kecamatan">Kecamatan:</label>
+    <input type="text" name="kecamatan" value="Cimahi">
+
+    <label for="kelurahan">Kelurahan:</label>
+    <input type="text" name="kelurahan" value="Cibeureum">
+
+    <label for="rt">RT:</label>
+    <input type="text" name="rt" value="01">
+
+    <label for="rw">RW:</label>
+    <input type="text" name="rw" value="02">
+
+    <label for="alamat">Alamat:</label>
+    <textarea name="alamat">Jl. Merdeka No. 10</textarea>
+
+    <label for="fotoMustahik">Foto Mustahik:</label>
+    <input type="file" name="fotoMustahik" accept="image/*">
+
+    <label for="ttdMustahik">TTD Mustahik:</label>
+    <input type="file" name="ttdMustahik" accept="image/*">
+
+    <label for="dokumenLain">Dokumen Lain:</label>
+    <input type="file" name="dokumenLain" accept=".pdf,.png,.jpg,.jpeg">
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h3>Response:</h3>
+  <div id="responseOutput">Menunggu response...</div>
+
+  <script>
+    const form = document.getElementById("mustahikForm");
+    const output = document.getElementById("responseOutput");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const token = document.getElementById("token").value;
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("http://localhost:3000/api/mustahik", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        console.log(data);
+
+        // Tampilkan di halaman
+        output.textContent = JSON.stringify(data, null, 2);
+
+        if (data.success && data.data.mustahik) {
+          // kalau mau langsung preview foto
+          if (data.data.mustahik.fotoMustahik) {
+            const img = document.createElement("img");
+            img.src = `http://localhost:3000/uploads/mustahik/${data.data.mustahik.fotoMustahik}`;
+            img.style.maxWidth = "200px";
+            img.style.display = "block";
+            img.style.marginTop = "10px";
+            output.appendChild(img);
+          }
+
+          if (data.data.mustahik.ttdMustahik) {
+            const img = document.createElement("img");
+            img.src = `http://localhost:3000/uploads/mustahik/${data.data.mustahik.ttdMustahik}`;
+            img.style.maxWidth = "200px";
+            img.style.display = "block";
+            img.style.marginTop = "10px";
+            output.appendChild(img);
+          }
+
+          if (data.data.mustahik.dokumenLain) {
+            const img = document.createElement("img");
+            img.src = `http://localhost:3000/uploads/mustahik/${data.data.mustahik.dokumenLain}`;
+            img.style.maxWidth = "200px";
+            img.style.display = "block";
+            img.style.marginTop = "10px";
+            output.appendChild(img);
+          }
+        }
+
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+
+</html>

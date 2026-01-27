@@ -18,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authRoutes);
 app.use("/api/mustahik", mustahikRoutes);
 
+// Access Public Folder
+app.use(express.static("public"));
+
 // Access File Upload
 app.use("/uploads", express.static("uploads"));
 
