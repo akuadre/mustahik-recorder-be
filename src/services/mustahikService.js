@@ -4,10 +4,16 @@ import { calculateAge } from "../utils/calculateAge.js";
 /**
  * helper untuk inject usia
  */
-const withAge = (mustahik) => ({
-  ...mustahik,
-  usia: calculateAge(mustahik.tanggalLahir),
-});
+
+// const withAge = (mustahik) => ({
+//   ...mustahik,
+//   usia: calculateAge(mustahik.tanggalLahir),
+// });
+
+const withAge = (mustahik) => {
+  const { id, nama, ...rest } = mustahik;
+  return { id, nama, usia: calculateAge(mustahik.tanggalLahir), ...rest };
+};
 
 const createMustahikService = async (payload) => {
   const mustahik = await prisma.mustahik.create({
