@@ -1,13 +1,24 @@
 import { prisma } from "../config/db.js";
+import { calculateAge } from "../utils/calculateAge.js";
+
+/**
+ * helper untuk inject usia
+ */
+const withAge = (mustahik) => ({
+  ...mustahik,
+  usia: calculateAge(mustahik.tanggalLahir),
+});
 
 const createMustahikService = async (payload) => {
-  return prisma.mustahik.create({
+  const mustahik = prisma.mustahik.create({
     data: payload,
   });
+
+  return withAge(mustahik);
 };
 
 const getAllMustahikService = async (search) => {
-  return prisma.mustahik.findMany({
+  const data = prisma.mustahik.findMany({
     where: search
       ? {
           OR: [
@@ -19,19 +30,25 @@ const getAllMustahikService = async (search) => {
       : undefined,
     orderBy: { createdAt: "desc" },
   });
+
+  return data.map(withAge);
 };
 
 const getMustahikByIdService = async (id) => {
-  return prisma.mustahik.findUnique({
+  const mustahik = prisma.mustahik.findUnique({
     where: { id },
   });
+
+  return mustahik ? withAge(mustahik) : null;
 };
 
 const updateMustahikService = async (id, payload) => {
-  return prisma.mustahik.update({
+  const mustahik = prisma.mustahik.update({
     where: { id },
     data: payload,
   });
+
+  return withAge(mustahik);
 };
 
 const deleteMustahikService = async (id) => {
