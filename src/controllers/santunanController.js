@@ -9,11 +9,13 @@ import { successResponse, errorResponse } from "../utils/response.js";
 
 const createSantunan = async (req, res) => {
   try {
-    const { nominal, program, jenisSantunan, userId, mustahikId } = req.body;
+    const { nominal, program, jenisSantunan, mustahikId } = req.body;
 
-    if (!nominal || !program || !jenisSantunan || !userId || !mustahikId) {
+    if (!nominal || !program || !jenisSantunan || !mustahikId) {
       return errorResponse(res, "Data santunan tidak lengkap", 400);
     }
+
+    const userId = req.user.id;
 
     const ttdPenerima = req.files?.ttdPenerima?.[0]?.filename || null;
     const dokumentasi = req.files?.dokumentasi?.[0]?.filename || null;
@@ -53,7 +55,7 @@ const getAllSantunan = async (req, res) => {
     const filter = {
       jenisSantunan: jenis,
     };
-    
+
     if (search) {
       filter.OR = [
         {

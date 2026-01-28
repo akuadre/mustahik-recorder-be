@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
+// Import Middleware
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
 import mustahikRoutes from "./routes/mustahikRoutes.js";
@@ -32,3 +35,11 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Catch all 404
+app.use((req, res, next) => {
+  errorResponse(res, `Route ${req.originalUrl} not found`, 404);
+});
+
+// Error middleware
+app.use(errorMiddleware);
